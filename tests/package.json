@@ -1,0 +1,11 @@
+{
+  "name": "cordova-acpplaces-tests",
+  "version": "0.0.1",
+  "description": "",
+  "cordova": {
+    "id": "cordova-acpplaces-tests",
+    "platforms": []
+  },
+  "author": "Adobe",
+  "license": "Apache 2.0"
+}

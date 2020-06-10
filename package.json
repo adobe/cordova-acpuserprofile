@@ -1,0 +1,27 @@
+{
+  "name": "@adobe/cordova-acpuserprofile",
+  "version": "0.0.1",
+  "description": "Adobe Experience Platform - User Profile plugin for Cordova apps.",
+  "cordova": {
+    "id": "cordova-acpuserprofile",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adobe/cordova-acpuserprofile"
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "adobe",
+    "user profile",
+    "acpuserprofile",
+    "marketing",
+    "cordova-android",
+    "cordova-ios"
+  ],
+  "author": "Adobe",
+  "license": "Apache-2.0"
+}
