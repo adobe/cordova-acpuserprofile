@@ -99,22 +99,18 @@ public class ACPUserProfile_Cordova extends CordovaPlugin {
                     public void call(Map<String, Object> retrievedAttributes) {
                         if(retrievedAttributes != null) {
                             JSONArray jsonArray = new JSONArray();
-                            JSONObject json;
                             int index = 0;
                             try {
                                 Iterator it = retrievedAttributes.entrySet().iterator();
                                 while(it.hasNext()) 
-                                { 
-                                    json = new JSONObject();
-                                    Map.Entry<String, Object> entry = (Map.Entry<String, Object>)it.next();
-                                    json.put(entry.getKey(), entry.getValue());
-                                    jsonArray.put(index, json);
+                                {
+                                    jsonArray.put(index, it.next());
                                     index++;
                                 } 
                             } catch (JSONException e){
                                 LOG.d(LOG_TAG, "Error putting data into JSON: " + e.getLocalizedMessage());
                             }
-                            callbackContext.success(jsonArray.toString());
+                            callbackContext.success(jsonArray);
                         } else {
                             callbackContext.error("Error retrieving user attributes.");
                         }
@@ -134,7 +130,7 @@ public class ACPUserProfile_Cordova extends CordovaPlugin {
                 }
                 String attributeName;
                 try {
-                    attributeName = args.getJSONObject(0).toString();
+                    attributeName = args.getString(0);
                 } catch (JSONException e) {
                     callbackContext.error("Error while parsing arguments, Error " + e.getLocalizedMessage());
                     return;
@@ -177,8 +173,8 @@ public class ACPUserProfile_Cordova extends CordovaPlugin {
                 String attributeName;
                 Object attributeValue;
                 try {
-                    attributeName = args.getJSONObject(0).toString();
-                    attributeValue = args.getJSONObject(1);
+                    attributeName = args.getString(0);
+                    attributeValue = args.get(1);
                 } catch (JSONException e) {
                     callbackContext.error("Error while parsing arguments, Error " + e.getLocalizedMessage());
                     return;
@@ -220,7 +216,7 @@ public class ACPUserProfile_Cordova extends CordovaPlugin {
         while (it.hasNext()) {
             String n = (String) it.next();
             try {
-                map.put(n, data.getString(n));
+                map.put(n, data.get(n));
             } catch (JSONException e) {
                 LOG.d(LOG_TAG, "JSON error: " + e.getLocalizedMessage());
             }
@@ -232,12 +228,12 @@ public class ACPUserProfile_Cordova extends CordovaPlugin {
     private List getListFromJSONArray(JSONArray array) throws JSONException {
         List list = new ArrayList();
         for (int i = 0; i < array.length(); i++) {
-            list.add(getJSONObject(array.get(i)));
+            list.add(getObjectFromJSON(array.get(i)));
         }
         return list;
     }
 
-    private Object getJSONObject(Object json) throws JSONException {
+    private Object getObjectFromJSON(Object json) throws JSONException {
         if (json == JSONObject.NULL) {
             return null;
         } else if (json instanceof JSONObject) {
