@@ -59,7 +59,11 @@ UserProfile.registerExtension();
 ```
 ##### Get user profile attributes which match the provided keys:
 ```js
-ACPUserProfile.getUserAttributes({"attributeName1", "attributeName2", "attributeName3"},function(response) {  
+var attributeNames = new Array();
+attributeNames.push("attributeName1");
+attributeNames.push("attributeName2");
+attributeNames.push("attributeName3");
+ACPUserProfile.getUserAttributes(attributeNames, function(response) {  
     console.log("Matching user profile attributes: ", response);
 }, function(error){  
     console.log(error);  
@@ -75,7 +79,11 @@ ACPUserProfile.removeUserAttribute("attributeName",function(response) {
 ```
 ##### Remove provided user profile attributes if they exist:
 ```js
-ACPUserProfile.removeUserAttributes({"attributeName1", "attributeName2", "attributeName3"},function(response) {  
+var attributeNames = new Array();
+attributeNames.push("attributeName1");
+attributeNames.push("attributeName2");
+attributeNames.push("attributeName3");
+ACPUserProfile.removeUserAttributes(attributeNames, function(response) {  
     console.log("User Profile attributes removed.", response);
 }, function(error){  
     console.log(error);  
@@ -83,7 +91,7 @@ ACPUserProfile.removeUserAttributes({"attributeName1", "attributeName2", "attrib
 ```
 ##### Set a single user profile attribute:
 ```js
-ACPUserProfile.updateUserAttribute("key", "value", function(response){  
+ACPUserProfile.updateUserAttribute("age", 30, function(response){  
     console.log("Successfully added user profile key and value.", response);  
 }, function(error){  
     console.log(error);  
@@ -91,7 +99,22 @@ ACPUserProfile.updateUserAttribute("key", "value", function(response){
 ```
 ##### Set multiple user profile attributes:
 ```js
-ACPUserProfile.updateUserAttributes({"userProfileKey1":"userProfileValue1","userProfileKey2":{"key":"value"}, "userProfileKey3":{"value1","value2","value3"}}, function(response) {  
+var firstName = "john";
+var age = 40;
+var state = "California";
+var phoneNumber = "555-555-5555";
+var vehicles = new Array();
+vehicles.push("car");
+vehicles.push("boat");
+vehicles.push("airplane");
+vehicles.push("motorcycle");
+var vehicleValues = new Array();
+vehicleValues.push(20000.99);
+vehicleValues.push(44000.50);
+vehicleValues.push(30000000);
+vehicleValues.push(15900.00);
+var attributeMap = {"first name":firstName, "age":age, "state":state, "phone number":phoneNumber, "vehicles":vehicles, "vehicleValues":vehicleValues};
+ACPUserProfile.updateUserAttributes(attributeMap, function(response) {  
     console.log("Successfully added user profile key(s) and value(s).");
 }, function(error){  
     console.log(error);  
