@@ -47,21 +47,20 @@
 - (void)getUserAttributes:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        __block NSDictionary* retrievedUserAttributes = nil;
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        NSArray<NSString*>* userAttributes = [self getCommandArg:command.arguments[0]];
-        [ACPUserProfile getUserAttributes:userAttributes withCompletionHandler:^(NSDictionary* _Nullable userAttributes, NSError* error) {
+        __block CDVPluginResult* pluginResult = nil;
+        NSArray<NSString*>* userAttributesToRetrieve = [self getCommandArg:command.arguments[0]];
+        [ACPUserProfile getUserAttributes:userAttributesToRetrieve withCompletionHandler:^(NSDictionary* _Nullable userAttributes, NSError* error) {
             if(userAttributes != nil && userAttributes.count != 0) {
-                retrievedUserAttributes = userAttributes;
-                dispatch_semaphore_signal(semaphore);
+                NSData* jsonData = [NSJSONSerialization dataWithJSONObject:userAttributes options:0 error:nil];
+                pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
             }
             if(error){
                 [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"User profile request error code: %@", error]] callbackId:command.callbackId];
             }
+            dispatch_semaphore_signal(semaphore);
         }];
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, ((int64_t)1 * NSEC_PER_SEC)));
-        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:retrievedUserAttributes options:0 error:nil];
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
@@ -90,8 +89,9 @@
 {
     [self.commandDelegate runInBackground:^{
         NSString* attributeName = [self getCommandArg:command.arguments[0]];
-        NSString* attributeValue = [self getCommandArg:command.arguments[1]];
-        [ACPUserProfile updateUserAttribute:attributeName withValue:attributeValue];
+        NSObject* attributeValue = [self getCommandArg:command.arguments[1]];
+        NSString *attributeValueString = [self convertObjectToString:attributeValue];
+        [ACPUserProfile updateUserAttribute:attributeName withValue:attributeValueString];
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
@@ -113,6 +113,17 @@
 
 - (id) getCommandArg:(id) argument {
     return argument == (id)[NSNull null] ? nil : argument;
+}
+
+- (NSString*) convertObjectToString:(NSObject*) attributeValue {
+    NSString* stringValue = @"";
+    if ([attributeValue isKindOfClass:[NSString class]]) {
+        stringValue = (NSString*)attributeValue;
+    } else if([attributeValue isKindOfClass:[NSArray class]]){
+        NSArray* tempArray = (NSArray*)attributeValue;
+        stringValue = [[tempArray valueForKey:@"description"] componentsJoinedByString:@", "];
+    }
+    return stringValue;
 }
 
 @end
