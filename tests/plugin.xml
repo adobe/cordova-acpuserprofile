@@ -19,9 +19,9 @@
 <plugin
     xmlns="http://apache.org/cordova/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    id="cordova-acpplaces-tests"
+    id="cordova-acpuserprofile-tests"
     version="0.0.1">
-    <name>Cordova Adobe Places Plugin Tests</name>
+    <name>Cordova Adobe User Profile Plugin Tests</name>
     <license>Apache 2.0</license>
 
     <js-module src="tests.js" name="tests">

@@ -1,115 +1,112 @@
 exports.defineAutoTests = function () {
 
-    describe('(ACPPlaces.clear)', function () {
-        beforeEach(function() {
-          spyOn(console, 'log');
-        })
-
-        it('should print log to console stating success is not function', function(){
-          ACPPlaces.clear("success", function() {})
-          expect(console.log).toHaveBeenCalled();
-        })
-
-        it('should print log to console stating error is not function', function(){
-          ACPPlaces.clear( function() {}, "error")
-          expect(console.log).toHaveBeenCalled();
-        })
-    });
-
-    describe('(ACPPlaces.extensionVersion)', function () {
+    describe('(ACPUserProfile.extensionVersion)', function () {
         it('should exist', function () {
-            expect(ACPPlaces.extensionVersion).toBeDefined();
+            expect(ACPUserProfile.extensionVersion).toBeDefined();
         });
         it('should be a function', function () {
-            expect(typeof ACPPlaces.extensionVersion === "function").toBe(true);
+            expect(typeof ACPUserProfile.extensionVersion === "function").toBe(true);
         });
         it('check if the result is a string', function (done) {
-            ACPPlaces.extensionVersion(function(result) {
+            ACPUserProfile.extensionVersion(function(result) {
                 expect(typeof result === "string").toBe(true);
                 done();
             }, function() {});
         });
     });
 
-    describe('(ACPPlaces.getCurrentPointsOfInterest)', function () {
+    describe('(ACPUserProfile.getUserAttributes)', function () {
+        beforeEach(function() {
+          spyOn(console, 'log');
+        })
+
+        var attributeNames = new Array();
+        attributeNames.push("attr1");
+        attributeNames.push("attr2");
+        attributeNames.push("attr3");
+
+        it('should print log to console stating success is not function', function(){
+          ACPUserProfile.getUserAttributes(attributeNames, "success", function() {})
+          expect(console.log).toHaveBeenCalled();
+        })
+
+        it('should print log to console stating error is not function', function(){
+          ACPUserProfile.getUserAttributes(attributeNames, function() {}, "error")
+          expect(console.log).toHaveBeenCalled();
+        })
+    });
+
+    describe('(ACPUserProfile.removeUserAttribute)', function () {
         beforeEach(function() {
           spyOn(console, 'log');
         })
 
         it('should print log to console stating success is not function', function(){
-          ACPPlaces.getCurrentPointsOfInterest("success", function() {})
+          ACPUserProfile.removeUserAttribute("attribute", "success", function() {})
           expect(console.log).toHaveBeenCalled();
         })
 
         it('should print log to console stating error is not function', function(){
-          ACPPlaces.getCurrentPointsOfInterest( function() {}, "error")
+          ACPUserProfile.removeUserAttribute("attribute", function() {}, "error")
           expect(console.log).toHaveBeenCalled();
         })
     });
 
-    describe('(ACPPlaces.getLastKnownLocation)', function () {
+    describe('(ACPUserProfile.removeUserAttributes)', function () {
         beforeEach(function() {
           spyOn(console, 'log');
         })
 
+        var attributeNames = new Array();
+        attributeNames.push("attr1");
+        attributeNames.push("attr2");
+        attributeNames.push("attr3");
+
         it('should print log to console stating success is not function', function(){
-          ACPPlaces.getLastKnownLocation("success", function() {})
+          ACPUserProfile.removeUserAttributes(attributeNames, "success", function() {})
           expect(console.log).toHaveBeenCalled();
         })
 
         it('should print log to console stating error is not function', function(){
-          ACPPlaces.getLastKnownLocation( function() {}, "error")
+          ACPUserProfile.removeUserAttributes(attributeNames, function() {}, "error")
           expect(console.log).toHaveBeenCalled();
         })
     });
 
-    describe('(ACPPlaces.getNearbyPointsOfInterest)', function () {
+    describe('(ACPUserProfile.updateUserAttribute)', function () {
         beforeEach(function() {
           spyOn(console, 'log');
         })
-
-        var location = {latitude:37.3309422, longitude:-121.8939077};
         it('should print log to console stating success is not function', function(){
-          ACPPlaces.getNearbyPointsOfInterest(location, 10, "success", function() {})
+          ACPUserProfile.updateUserAttribute("attribute", "value", "success", function() {})
           expect(console.log).toHaveBeenCalled();
         })
 
         it('should print log to console stating error is not function', function(){
-          ACPPlaces.getNearbyPointsOfInterest(location, 10, function() {}, "error")
+          ACPUserProfile.updateUserAttribute("attributs", "value", function() {}, "error")
           expect(console.log).toHaveBeenCalled();
         })
     });
 
-    describe('(ACPPlaces.processGeofence)', function () {
-        beforeEach(function() {
-          spyOn(console, 'log');
-        })
-
-        var region = {latitude:37.3309422, longitude:-121.8939077, radius:1000};
-        var geofence = {requestId:"requestId", circularRegion:region, expirationDuration:-1};
-        it('should print log to console stating success is not function', function(){
-          ACPPlaces.processGeofence(geofence, "success", function() {})
-          expect(console.log).toHaveBeenCalled();
-        })
-
-        it('should print log to console stating error is not function', function(){
-          ACPPlaces.processGeofence(geofence, function() {}, "error")
-          expect(console.log).toHaveBeenCalled();
-        })
-    });
-
-    describe('(ACPPlaces.setAuthorizationStatus)', function () {
+    describe('(ACPUserProfile.updateUserAttributes)', function () {
         beforeEach(function(){
           spyOn(console, 'log');
         })
 
+        var testString = "test";
+        var testNumber = 40;
+        var attributes = new Array();
+        attributes.push("attr1");
+        attributes.push(30);
+        var testMap = {"color1":"red", "color2":"blue", "color3":"green"}
+        var attributeMap = {"test string":testString, "test number":testNumber, "attributes":attributes, "test map":testMap};
         it('should print log to console stating success is not function', function(){
-          ACPPlaces.setAuthorizationStatus(1, "success", function() {})
+          ACPUserProfile.updateUserAttributes(attributeMap, "success", function() {})
           expect(console.log).toHaveBeenCalled();
         })
 
         it('should print log to console stating error is not function', function(){
-          ACPPlaces.setAuthorizationStatus(1, function() {}, "error")
+          ACPUserProfile.updateUserAttributes(attributeMap, function() {}, "error")
           expect(console.log).toHaveBeenCalled();
         })
     });

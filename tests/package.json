@@ -1,9 +1,9 @@
 {
-  "name": "cordova-acpplaces-tests",
+  "name": "cordova-acpuserprofile-tests",
   "version": "0.0.1",
   "description": "",
   "cordova": {
-    "id": "cordova-acpplaces-tests",
+    "id": "cordova-acpuserprofile-tests",
     "platforms": []
   },
   "author": "Adobe",
