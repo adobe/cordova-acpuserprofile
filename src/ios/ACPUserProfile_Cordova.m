@@ -9,7 +9,7 @@
  governing permissions and limitations under the License.
  */
 
-/********* cordova-acpplaces.m Cordova Plugin Implementation *******/
+/********* cordova-acpuserprofile.m Cordova Plugin Implementation *******/
 
 #import <Cordova/CDV.h>
 #import <ACPUserProfile/ACPUserProfile.h>
@@ -17,44 +17,22 @@
 
 @interface ACPUserProfile_Cordova : CDVPlugin
 
-- (void)clear:(CDVInvokedUrlCommand*)command;
 - (void)extensionVersion:(CDVInvokedUrlCommand*)command;
-- (void)getCurrentPointsOfInterest:(CDVInvokedUrlCommand*)command;
-- (void)getLastKnownLocation:(CDVInvokedUrlCommand*)command;
-- (void)getNearbyPointsOfInterest:(CDVInvokedUrlCommand*)command;
-- (void)processGeofence:(CDVInvokedUrlCommand*)command;
-- (void)setAuthorizationStatus:(CDVInvokedUrlCommand*)command;
+- (void)getUserAttributes:(CDVInvokedUrlCommand*)command;
+- (void)removeUserAttribute:(CDVInvokedUrlCommand*)command;
+- (void)removeUserAttributes:(CDVInvokedUrlCommand*)command;
+- (void)updateUserAttribute:(CDVInvokedUrlCommand*)command;
+- (void)updateUserAttributes:(CDVInvokedUrlCommand*)command;
 
 @end
 
 @implementation ACPUserProfile_Cordova
 
-static NSString * const POI = @"POI";
-static NSString * const LATITUDE = @"Latitude";
-static NSString * const LONGITUDE = @"Longitude";
-static NSString * const LOWERCASE_LATITUDE = @"latitude";
-static NSString * const LOWERCASE_LONGITUDE = @"longitude";
-static NSString * const IDENTIFIER = @"Identifier";
-static NSString * const CENTER = @"center";
-static NSString * const RADIUS = @"radius";
-static NSString * const REQUEST_ID = @"requestId";
-static NSString * const CIRCULAR_REGION = @"circularRegion";
-static NSString * const EMPTY_ARRAY_STRING = @"[]";
-
-- (void)clear:(CDVInvokedUrlCommand*)command
-{
-    [self.commandDelegate runInBackground:^{
-        [ACPPlaces clear];
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    }];
-}
-
 - (void)extensionVersion:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
         CDVPluginResult* pluginResult = nil;
-        NSString* extensionVersion = [ACPPlaces extensionVersion];
+        NSString* extensionVersion = [ACPUserProfile extensionVersion];
 
         if (extensionVersion != nil && [extensionVersion length] > 0) {
             pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:extensionVersion];
@@ -66,83 +44,64 @@ static NSString * const EMPTY_ARRAY_STRING = @"[]";
     }];
 }
 
-- (void)getCurrentPointsOfInterest:(CDVInvokedUrlCommand*)command
+- (void)getUserAttributes:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        __block NSString* currentPoisString = EMPTY_ARRAY_STRING;
+        __block NSDictionary* retrievedUserAttributes = nil;
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [ACPPlaces getCurrentPointsOfInterest:^(NSArray<ACPPlacesPoi *> * _Nullable retrievedPois) {
-            if(retrievedPois != nil && retrievedPois.count != 0) {
-                currentPoisString = [self generatePOIString:retrievedPois];
+        NSArray<NSString*>* userAttributes = [self getCommandArg:command.arguments[0]];
+        [ACPUserProfile getUserAttributes:userAttributes withCompletionHandler:^(NSDictionary* _Nullable userAttributes, NSError* error) {
+            if(userAttributes != nil && userAttributes.count != 0) {
+                retrievedUserAttributes = userAttributes;
                 dispatch_semaphore_signal(semaphore);
+            }
+            if(error){
+                [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"User profile request error code: %@", error]] callbackId:command.callbackId];
             }
         }];
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, ((int64_t)1 * NSEC_PER_SEC)));
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:currentPoisString];
+        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:retrievedUserAttributes options:0 error:nil];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
 
-- (void)getLastKnownLocation:(CDVInvokedUrlCommand*)command
+- (void)removeUserAttribute:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        [ACPPlaces getLastKnownLocation:^(CLLocation * _Nullable lastLocation) {
-            NSMutableDictionary* tempDict = [[NSMutableDictionary alloc]init];
-            [tempDict setValue:[NSNumber numberWithDouble:lastLocation.coordinate.latitude] forKey:LATITUDE];
-            [tempDict setValue:[NSNumber numberWithDouble:lastLocation.coordinate.longitude] forKey:LONGITUDE];
-            NSData* jsonData = [NSJSONSerialization dataWithJSONObject:tempDict options:0 error:nil];
-            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
-            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-        }];
-    }];
-}
-
-- (void)getNearbyPointsOfInterest:(CDVInvokedUrlCommand*)command
-{
-    [self.commandDelegate runInBackground:^{
-        NSDictionary* locationDict = [self getCommandArg:command.arguments[0]];
-        CLLocationDegrees latitude = [[locationDict valueForKey:LOWERCASE_LATITUDE] doubleValue];
-        CLLocationDegrees longitude = [[locationDict valueForKey:LOWERCASE_LONGITUDE] doubleValue];
-        CLLocation* currentLocation = [[CLLocation alloc] initWithLatitude:latitude longitude:longitude];
-        NSUInteger limit = [[self getCommandArg:command.arguments[1]] integerValue];
-        __block NSString* currentPoisString = EMPTY_ARRAY_STRING;
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [ACPPlaces getNearbyPointsOfInterest:currentLocation limit:limit callback:^(NSArray<ACPPlacesPoi *> * _Nullable retrievedPois) {
-                currentPoisString = [self generatePOIString:retrievedPois];
-                dispatch_semaphore_signal(semaphore);
-            }
-                errorCallback:^(ACPPlacesRequestError error) {
-            [self.commandDelegate sendPluginResult:[CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:[NSString stringWithFormat:@"Places request error code: %lu", error]] callbackId:command.callbackId];
-        }];
-        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, ((int64_t)1 * NSEC_PER_SEC)));
-        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:currentPoisString];
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    }];
-}
-
-- (void)processGeofence:(CDVInvokedUrlCommand*)command
-{
-    [self.commandDelegate runInBackground:^{
-        NSDictionary* geofenceDict = [self getCommandArg:command.arguments[0]];
-        NSDictionary* regionDict = [geofenceDict valueForKey:CIRCULAR_REGION];
-        ACPRegionEventType eventType = [[self getCommandArg:command.arguments[1]] integerValue];
-        CLLocationDegrees latitude = [[regionDict valueForKey:LOWERCASE_LATITUDE] doubleValue];
-        CLLocationDegrees longitude = [[regionDict valueForKey:LOWERCASE_LONGITUDE] doubleValue];
-        CLLocationCoordinate2D center = CLLocationCoordinate2DMake(latitude,longitude);
-        NSUInteger radius = [[regionDict valueForKey:RADIUS] integerValue];
-        NSString* identifier = [geofenceDict valueForKey:REQUEST_ID];
-        CLRegion* region = [[CLCircularRegion alloc] initWithCenter:center radius:radius identifier:identifier];
-        [ACPPlaces processRegionEvent:region forRegionEventType:eventType];
+        NSString* attribute = [self getCommandArg:command.arguments[0]];
+        [ACPUserProfile removeUserAttribute:attribute];
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
 }
 
-- (void)setAuthorizationStatus:(CDVInvokedUrlCommand*)command
+- (void)removeUserAttributes:(CDVInvokedUrlCommand*)command
 {
     [self.commandDelegate runInBackground:^{
-        int status = [[self getCommandArg:command.arguments[0]] integerValue];
-        [ACPPlaces setAuthorizationStatus:[self convertToCLAuthorizationStatus:status]];
+        NSArray<NSString*>* userAttributes = [self getCommandArg:command.arguments[0]];
+        [ACPUserProfile removeUserAttributes:userAttributes];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)updateUserAttribute:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        NSString* attributeName = [self getCommandArg:command.arguments[0]];
+        NSString* attributeValue = [self getCommandArg:command.arguments[1]];
+        [ACPUserProfile updateUserAttribute:attributeName withValue:attributeValue];
+        CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    }];
+}
+
+- (void)updateUserAttributes:(CDVInvokedUrlCommand*)command
+{
+    [self.commandDelegate runInBackground:^{
+        NSDictionary* attributes = [self getCommandArg:command.arguments[0]];
+        [ACPUserProfile updateUserAttributes:attributes];
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
@@ -155,49 +114,5 @@ static NSString * const EMPTY_ARRAY_STRING = @"[]";
 - (id) getCommandArg:(id) argument {
     return argument == (id)[NSNull null] ? nil : argument;
 }
-
-- (NSString*) generatePOIString:(NSArray<ACPPlacesPoi *> *) retrievedPois {
-    NSMutableArray* retrievedPoisArray = [[NSMutableArray alloc]init];
-    if(retrievedPois != nil && retrievedPois.count != 0) {
-        for (int index = 0; index < retrievedPois.count; index++) {
-            NSMutableDictionary* tempDict = [[NSMutableDictionary alloc]init];
-            ACPPlacesPoi* currentPoi = retrievedPois[index];
-            [tempDict setValue:currentPoi.name forKey:POI];
-            [tempDict setValue:[NSNumber numberWithDouble:currentPoi.latitude] forKey:LATITUDE];
-            [tempDict setValue:[NSNumber numberWithDouble:currentPoi.longitude] forKey:LONGITUDE];
-            [tempDict setValue:currentPoi.identifier forKey:IDENTIFIER];
-            retrievedPoisArray[index] = tempDict;
-        }
-        NSData* jsonData = [NSJSONSerialization dataWithJSONObject:retrievedPoisArray options:0 error:nil];
-        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    }
-    return EMPTY_ARRAY_STRING;
-}
-
-- (CLAuthorizationStatus) convertToCLAuthorizationStatus:(int) status {
-    switch (status) {
-    case 0:
-        return kCLAuthorizationStatusDenied;
-        break;
-
-    case 1:
-        return kCLAuthorizationStatusAuthorizedAlways;
-        break;
-
-    case 2:
-        return kCLAuthorizationStatusNotDetermined;
-        break;
-
-    case 3:
-        return kCLAuthorizationStatusRestricted;
-        break;
-
-    case 4:
-    default:
-        return kCLAuthorizationStatusAuthorizedWhenInUse;
-        break;
-    }
-}
-
 
 @end

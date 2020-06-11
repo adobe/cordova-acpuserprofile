@@ -108,12 +108,8 @@ vehicles.push("car");
 vehicles.push("boat");
 vehicles.push("airplane");
 vehicles.push("motorcycle");
-var vehicleValues = new Array();
-vehicleValues.push(20000.99);
-vehicleValues.push(44000.50);
-vehicleValues.push(30000000);
-vehicleValues.push(15900.00);
-var attributeMap = {"first name":firstName, "age":age, "state":state, "phone number":phoneNumber, "vehicles":vehicles, "vehicleValues":vehicleValues};
+var colors = {"color1":"red", "color2":"blue", "color3":"green"}
+var attributeMap = {"first name":firstName, "age":age, "state":state, "phone number":phoneNumber, "vehicles":vehicles, "colors":colors};
 ACPUserProfile.updateUserAttributes(attributeMap, function(response) {  
     console.log("Successfully added user profile key(s) and value(s).");
 }, function(error){  
@@ -136,7 +132,18 @@ cordova-paramedic --platform android --plugin . --verbose
 
 ## Sample App
 
-A Cordova app for testing the plugin is located in the `https://github.com/adobe/cordova-acpsample`. The app is configured for both iOS and Android platforms.  
+A Cordova app for testing the Adobe SDK plugins is located at [https://github.com/adobe/cordova-acpsample](https://github.com/adobe/cordova-acpsample). The app is configured for both iOS and Android platforms.  
+
+## Additional Cordova Plugins
+
+Below is a list of additional Cordova plugins from the AEP SDK suite:
+
+| Extension | GitHub | npm |
+|-----------|--------|-----|
+| Core SDK | https://github.com/adobe/cordova-acpcore | [![npm](https://img.shields.io/npm/v/@adobe/cordova-acpcore)](https://www.npmjs.com/package/@adobe/cordova-acpcore)
+| Adobe Analytics | https://github.com/adobe/cordova-acpanalytics | [![npm](https://img.shields.io/npm/v/@adobe/cordova-acpanalytics)](https://www.npmjs.com/package/@adobe/cordova-acpanalytics)
+| Places | https://github.com/adobe/cordova-acpplaces | [![npm](https://img.shields.io/npm/v/@adobe/cordova-acpplaces)](https://www.npmjs.com/package/@adobe/cordova-acpplaces)
+| Project Griffon (Beta) | https://github.com/adobe/cordova-acpgriffon | [![npm](https://img.shields.io/npm/v/@adobe/cordova-acpgriffon)](https://www.npmjs.com/package/@adobe/cordova-acpgriffon)
 
 ## Contributing
 Looking to contribute to this project? Please review our [Contributing guidelines](.github/CONTRIBUTING.md) prior to opening a pull request.
