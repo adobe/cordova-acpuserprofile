@@ -99,18 +99,22 @@ public class ACPUserProfile_Cordova extends CordovaPlugin {
                     public void call(Map<String, Object> retrievedAttributes) {
                         if(retrievedAttributes != null) {
                             JSONArray jsonArray = new JSONArray();
+                            JSONObject json;
                             int index = 0;
                             try {
                                 Iterator it = retrievedAttributes.entrySet().iterator();
                                 while(it.hasNext()) 
                                 {
-                                    jsonArray.put(index, it.next());
+                                    json = new JSONObject();
+                                    Map.Entry<String,Object> entry = (Map.Entry<String,Object>)it.next();
+                                    json.put(entry.getKey(), entry.getValue());
+                                    jsonArray.put(index, json);
                                     index++;
                                 } 
                             } catch (JSONException e){
                                 LOG.d(LOG_TAG, "Error putting data into JSON: " + e.getLocalizedMessage());
                             }
-                            callbackContext.success(jsonArray);
+                            callbackContext.success(jsonArray.toString());
                         } else {
                             callbackContext.error("Error retrieving user attributes.");
                         }
@@ -228,20 +232,8 @@ public class ACPUserProfile_Cordova extends CordovaPlugin {
     private List getListFromJSONArray(JSONArray array) throws JSONException {
         List list = new ArrayList();
         for (int i = 0; i < array.length(); i++) {
-            list.add(getObjectFromJSON(array.get(i)));
+            list.add(array.get(i));
         }
         return list;
-    }
-
-    private Object getObjectFromJSON(Object json) throws JSONException {
-        if (json == JSONObject.NULL) {
-            return null;
-        } else if (json instanceof JSONObject) {
-            return getObjectMapFromJSON((JSONObject) json);
-        } else if (json instanceof JSONArray) {
-            return getListFromJSONArray((JSONArray) json);
-        } else {
-            return json;
-        }
     }
 }
