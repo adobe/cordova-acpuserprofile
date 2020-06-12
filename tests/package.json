@@ -1,0 +1,11 @@
+{
+  "name": "cordova-acpuserprofile-tests",
+  "version": "0.0.1",
+  "description": "",
+  "cordova": {
+    "id": "cordova-acpuserprofile-tests",
+    "platforms": []
+  },
+  "author": "Adobe",
+  "license": "Apache 2.0"
+}
