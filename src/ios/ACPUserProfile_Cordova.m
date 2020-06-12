@@ -122,6 +122,9 @@
     } else if([attributeValue isKindOfClass:[NSArray class]]){
         NSArray* tempArray = (NSArray*)attributeValue;
         stringValue = [[tempArray valueForKey:@"description"] componentsJoinedByString:@", "];
+    } else if([attributeValue isKindOfClass:[NSDictionary class]]){
+        NSDictionary* tempDict = (NSDictionary*)attributeValue;
+        stringValue = [[tempDict valueForKey:@"description"] componentsJoinedByString:@", "];
     }
     return stringValue;
 }
