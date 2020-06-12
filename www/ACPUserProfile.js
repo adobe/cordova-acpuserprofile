@@ -108,7 +108,7 @@ var ACPUserProfile = (function() {
             return;
         }
 
-        if (!acpIsValidUserAttribute(attributeValue)) {
+        if (!acpIsString(attributeValue) && !acpIsNumber(attributeValue) && !acpIsArray(attributeValue)) {
             acpPrintNotAValidAttributeValue("attributeValue", FUNCTION_NAME);
             return;
         }
@@ -194,23 +194,8 @@ function acpPrintNotAnArray (paramName, functionName) {
     console.log("Ignoring call to '" + functionName + "'. The '" + paramName + "' parameter is required to be an Array.");
 };
 
-function acpIsMap (value) {
-    return value && typeof value === 'object' && value.constructor === Map;
-};
-
-function acpPrintNotAMap(paramName, functionName) {
-    console.log("Ignoring call to '" + functionName + "'. The '" + paramName + "' parameter is required to be a Map.");
-};
-
-function acpIsValidUserAttribute(value) {
-    if (!acpIsString(value) && !acpIsNumber(value) && !acpIsArray(value) &&!acpIsMap(value)) {
-        return false;
-    }
-    return true;
-}
-
 function acpPrintNotAValidAttributeValue (paramName, functionName) {
-    console.log("Ignoring call to '" + functionName + "'. The '" + paramName + "' parameter is required to be an String, Number, Array, or Map.");
+    console.log("Ignoring call to '" + functionName + "'. The '" + paramName + "' parameter is required to be an String, Number, or Array.");
 };
 
 module.exports = ACPUserProfile;
