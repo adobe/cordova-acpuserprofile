@@ -12,7 +12,7 @@
 var ACPUserProfile = (function() {
     var exec = require('cordova/exec');
 	var ACPUserProfile = (typeof exports !== 'undefined') && exports || {};
-	var PLUGIN_NAME = "ACPUserProfile";
+	var PLUGIN_NAME = "ACPUserProfile_Cordova";
 
 	// ===========================================================================
 	// public APIs
@@ -32,7 +32,7 @@ var ACPUserProfile = (function() {
             return;
         }
 
-        return exec(success, error, 'ACPUserProfile_Cordova', FUNCTION_NAME, []);
+        return exec(success, error, PLUGIN_NAME, FUNCTION_NAME, []);
     };
 
     // Get user profile attributes which match the provided keys.
@@ -54,7 +54,7 @@ var ACPUserProfile = (function() {
             return;
         }
 
-        return exec(success, error, 'ACPUserProfile_Cordova', FUNCTION_NAME, [attributeNames]);
+        return exec(success, error, PLUGIN_NAME, FUNCTION_NAME, [attributeNames]);
     };
 
     // Remove user profile attribute if it exists.
@@ -75,7 +75,7 @@ var ACPUserProfile = (function() {
             printNotAFunction("error", FUNCTION_NAME);
             return;
         }
-        return exec(success, error, 'ACPUserProfile_Cordova', FUNCTION_NAME, [attributeName]);
+        return exec(success, error, PLUGIN_NAME, FUNCTION_NAME, [attributeName]);
     };
 
     // Remove provided user profile attributes if they exist.
@@ -96,7 +96,7 @@ var ACPUserProfile = (function() {
             printNotAFunction("error", FUNCTION_NAME);
             return;
         }
-        return exec(success, error, 'ACPUserProfile_Cordova', FUNCTION_NAME, [attributeNames]);
+        return exec(success, error, PLUGIN_NAME, FUNCTION_NAME, [attributeNames]);
     };
 
     // Set a single user profile attribute.
@@ -123,7 +123,7 @@ var ACPUserProfile = (function() {
             return;
         }
 
-        return exec(success, error, 'ACPUserProfile_Cordova', FUNCTION_NAME, [attributeName, attributeValue]);
+        return exec(success, error, PLUGIN_NAME, FUNCTION_NAME, [attributeName, attributeValue]);
     };
 
     // Set multiple user profile attributes.
@@ -145,7 +145,7 @@ var ACPUserProfile = (function() {
             return;
         }
 
-        exec(success, error, 'ACPUserProfile_Cordova', FUNCTION_NAME, [attributes]);
+        exec(success, error, PLUGIN_NAME, FUNCTION_NAME, [attributes]);
     };
 
 	return ACPUserProfile;
