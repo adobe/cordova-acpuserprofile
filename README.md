@@ -3,7 +3,7 @@
 
 [![CI](https://github.com/adobe/cordova-acpuserprofile/workflows/CI/badge.svg)](https://github.com/adobe/cordova-acpuserprofile/actions)
 [![npm](https://img.shields.io/npm/v/@adobe/cordova-acpuserprofile)](https://www.npmjs.com/package/@adobe/cordova-acpuserprofile)
-[![GitHub](https://img.shields.io/github/license/adobe/cordova-acpuserprofile)](https://github.com/adobe/cordova-acpuserprofile/blob/master/LICENSE)
+[![GitHub](https://img.shields.io/github/license/adobe/cordova-acpuserprofile)](https://github.com/adobe/cordova-acpuserprofile/blob/main/LICENSE)
 
 - [Prerequisites](#prerequisites)  
 - [Installation](#installation)
@@ -47,7 +47,7 @@ ACPUserProfile.extensionVersion(function(version){
 ##### Registering the extension with ACPCore:  
 
  > Note: It is required to initialize the SDK via native code inside your AppDelegate and MainApplication for iOS and Android respectively. For more information see how to initialize [Core](https://aep-sdks.gitbook.io/docs/getting-started/get-the-sdk#2-add-initialization-code).  
-  
+
   ##### **iOS**  
 ```objective-c
 #import "ACPUserProfile.h"  
